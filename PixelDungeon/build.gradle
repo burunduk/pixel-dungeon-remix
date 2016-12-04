@@ -9,12 +9,12 @@ android {
             storePassword '123456'
         }
     }
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.1'
     defaultConfig {
         applicationId "com.nyrds.pixeldungeon.ml"
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion 25
         testInstrumentationRunner 'android.test.InstrumentationTestRunner'
     }
     buildTypes {
