@@ -1,5 +1,15 @@
 language: android
 jdk: oraclejdk8
+addons:
+  apt:
+    packages:
+    - lib32gcc1
+    - libc6-i386
+    - lib32z1
+    - lib32stdc++6
+    - lib32ncurses5
+    - lib32gomp1
+    - lib32z1-dev
 android:
   components:
     # Uncomment the lines below if you want to
@@ -8,10 +18,10 @@ android:
     - tools
 
     # The BuildTools version used by your project
-    - build-tools-23.0.2
+    - build-tools-25.0.1
 
     # The SDK version used to compile your project
-    - android-23
+    - android-25
 
     # Additional components
     - extra-google-google_play_services
@@ -23,5 +33,6 @@ android:
     # if you need to run emulator(s) during your tests
     #- sys-img-armeabi-v7a-android-19
     #- sys-img-x86-android-17
+
 before_install:
  - chmod +x gradlew
