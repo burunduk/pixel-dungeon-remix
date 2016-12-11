@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accessories descriptions -->
+    <!-- STRINGS OF SantaHat CLASS -->
+    <string name="SantaHat_Name">Капелюх Санти</string>
+    <string name="SantaHat_Info">Нічого не розкаже краще про підземеллство краще, а ніж червоний капелюх Лорда Глибин - Санти.</string>
+
+    <!-- STRINGS OF Rudolph CLASS -->
+    <string name="Rudolph_Name">Червоний ніс та роги</string>
+    <string name="Rudolph_Info">Що може бути більш святковим, а ніж яскравий червоний ніс?</string>
+
+    <!-- Mobs descriptions -->
+    <!-- STRINGS OF Kobold CLASS -->
+    <string name="Kobold_Name">кобольд</string>
+    <string name="Kobold_Gender">masculine</string>
+    <string name="Kobold_Name_Objective">кобольда</string>
+    <string name="Kobold_Desc">Без сумніву, це кобольд.</string>
+
+    <!-- Levels descriptions -->
+    <string name="IceCaves_TileDescDeco">Цей гнолл був заморожений заживо. Схоже він був заморожений тривалий час.</string>
+    <string name="IceCaves_TileHighGrass">Заморожена трава.</string>
+    <string name="IceCaves_TileDescHighGrass">Щільний заморожений блок трави.</string>
+
+</resources>
