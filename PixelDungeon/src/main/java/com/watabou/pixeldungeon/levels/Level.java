@@ -185,7 +185,7 @@ public abstract class Level implements Bundlable {
 
 	public boolean[] discoverable;
 
-	private Feeling feeling = Feeling.UNDEFINED;
+	protected Feeling feeling = Feeling.UNDEFINED;
 
 	public int entrance;
 
@@ -262,6 +262,8 @@ public abstract class Level implements Bundlable {
 	}
 
 	protected void initSizeDependentStuff() {
+
+		Dungeon.initSizeDependentStuff(getWidth(),getHeight());
 		NEIGHBOURS4 = new int[]{-getWidth(), +1, +getWidth(), -1};
 		NEIGHBOURS8 = new int[]{+1, -1, +getWidth(), -getWidth(),
 				+1 + getWidth(), +1 - getWidth(), -1 + getWidth(),
@@ -331,7 +333,6 @@ public abstract class Level implements Bundlable {
 			feeling = DungeonGenerator.getCurrentLevelFeeling(levelId);
 			if (feeling == Feeling.UNDEFINED) {
 				if (Dungeon.depth > 1) {
-
 					switch (Random.Int(10)) {
 						case 0:
 							feeling = Feeling.CHASM;
@@ -587,16 +588,21 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (mob == null) {
-			mob = Bestiary.mutable(Dungeon.depth, levelKind());
+			mob = Bestiary.mutable();
 		}
 
+		setMobSpawnPos(mob);
+
+		return mob;
+	}
+
+	protected void setMobSpawnPos(Mob mob) {
 		if (!mob.isWallWalker()) {
 			mob.setPos(randomRespawnCell());
 		} else {
 			mob.setState(mob.WANDERING);
 			mob.setPos(randomSolidCell());
 		}
-		return mob;
 	}
 
 	public Actor respawner() {
@@ -1059,7 +1065,7 @@ public abstract class Level implements Bundlable {
 			}
 		}
 
-		if ((sighted && sense > 1) || !sighted) {
+		if (!sighted || sense > 1) {
 
 			int ax = Math.max(0, cx - sense);
 			int bx = Math.min(cx + sense, getWidth() - 1);

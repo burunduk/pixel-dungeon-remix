@@ -17,13 +17,13 @@
  */
 package com.watabou.pixeldungeon.levels;
 
+import com.nyrds.pixeldungeon.levels.CustomLevel;
 import com.nyrds.pixeldungeon.levels.objects.Barrel;
 import com.nyrds.pixeldungeon.levels.objects.Sign;
 import com.nyrds.pixeldungeon.utils.DungeonGenerator;
 import com.watabou.pixeldungeon.Bones;
 import com.watabou.pixeldungeon.Dungeon;
 import com.watabou.pixeldungeon.actors.Actor;
-import com.watabou.pixeldungeon.actors.mobs.Mob;
 import com.watabou.pixeldungeon.items.Generator;
 import com.watabou.pixeldungeon.items.Heap;
 import com.watabou.pixeldungeon.items.Item;
@@ -31,6 +31,7 @@ import com.watabou.pixeldungeon.items.scrolls.ScrollOfUpgrade;
 import com.watabou.pixeldungeon.levels.Room.Type;
 import com.watabou.pixeldungeon.levels.painters.ExitPainter;
 import com.watabou.pixeldungeon.levels.painters.Painter;
+import com.watabou.pixeldungeon.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Graph;
 import com.watabou.utils.Random;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public abstract class RegularLevel extends CommonLevel {
+public abstract class RegularLevel extends CustomLevel {
 
 	protected HashSet<Room> rooms;
 
@@ -97,47 +98,37 @@ public abstract class RegularLevel extends CommonLevel {
 
 		placeSecondaryExits();
 
-		HashSet<Room> connected = new HashSet<>();
-		connected.add(roomEntrance);
+		buildPath(roomEntrance, exitRoom(0));
 
-		Graph.buildDistanceMap(rooms, exitRoom(0));
-		List<Room> path = Graph.buildPath(rooms, roomEntrance, exitRoom(0));
+		ArrayList<Room> connectedRooms = new ArrayList<>();
+		connectedRooms.add(roomEntrance);
 
-		Room room = roomEntrance;
-		for (Room next : path) {
-			room.connect(next);
-			room = next;
-			connected.add(room);
+		for (int i = 0; i<DungeonGenerator.exitCount(levelId);++i) {
+			connectedRooms.add(exitRoom(i));
 		}
 
-		Graph.setPrice(path, roomEntrance.distance);
-
-		Graph.buildDistanceMap(rooms, exitRoom(0));
-		path = Graph.buildPath(rooms, roomEntrance, exitRoom(0));
-
-		room = roomEntrance;
-		for (Room next : path) {
-			room.connect(next);
-			room = next;
-			connected.add(room);
-		}
-
-		int nConnected = (int) (rooms.size() * Random.Float(0.5f, 0.7f));
-		while (connected.size() < nConnected) {
-
-			Room cr = Random.element(connected);
-			Room or = Random.element(cr.neighbours);
-			if (!connected.contains(or)) {
-
-				cr.connect(or);
-				connected.add(or);
+		int isolatedCounter = 0;
+		int roomCounter = 0;
+		for (Room r: rooms) {
+			if(!connectedRooms.contains(r)) {
+				roomCounter++;
+				Room connectedRoom = Random.element(connectedRooms);
+				if (r.isRoomIsolatedFrom(connectedRoom)) {
+					buildPath(connectedRoom,r);
+					isolatedCounter++;
+					GLog.i("%s isolated rooms: %d | %d ",r.type.toString(), isolatedCounter, roomCounter);
+				} else {
+					if(connectedRoom.width()>=3 || connectedRoom.height()>=3) {
+						connectedRooms.add(r);
+					}
+				}
 			}
 		}
 
 		if (Dungeon.shopOnLevel()) {
 			Room shop = null;
 			for (Room r : roomEntrance.connected.keySet()) {
-				if (r.connected.size() == 1 && r.width() >= 5 && r.height() >= 5) {
+				if (r.width() >= 5 && r.height() >= 5) {
 					shop = r;
 					break;
 				}
@@ -152,6 +143,7 @@ public abstract class RegularLevel extends CommonLevel {
 
 		assignRoomType();
 
+
 		paint();
 		paintWater();
 		paintGrass();
@@ -161,7 +153,24 @@ public abstract class RegularLevel extends CommonLevel {
 		return true;
 	}
 
-	Room exitRoom(int index) {
+	private void buildPath(Room from, Room to) {
+		Graph.buildDistanceMap(rooms, to);
+		List<Room> path = Graph.buildPath(from, to);
+		if(path!=null) {
+			Room room = from;
+			for (Room next : path) {
+				if (!room.isRoomIsolatedFrom(to)) {
+					break;
+				}
+				room.price(room.price()*2);
+				room.connect(next);
+				room = next;
+			}
+		}
+	}
+
+
+	protected Room exitRoom(int index) {
 		return exits.get(index);
 	}
 
@@ -177,17 +186,49 @@ public abstract class RegularLevel extends CommonLevel {
 					secondaryExit.height() < 4
 					);
 			secondaryExit.type = Type.EXIT;
-
-			Graph.buildDistanceMap(rooms, secondaryExit);
-			List<Room> path = Graph.buildPath(rooms, roomEntrance, secondaryExit);
-
 			exits.put(i, secondaryExit);
 
-			Room room = roomEntrance;
-			for (Room next : path) {
-				room.connect(next);
-				room = next;
+			buildPath(exitRoom(i-1),exitRoom(i));
+		}
+	}
+
+	protected void assignRemainingRooms() {
+		int count = 0;
+		for (Room r : rooms) {
+			if (r.type == Type.NULL) {
+				int connections = r.connected.size();
+				if (connections == 0) {
+
+				} else if (Random.Int(connections * connections) == 0) {
+					r.type = Type.STANDARD;
+					count++;
+				} else {
+					r.type = Type.TUNNEL;
+				}
 			}
+		}
+
+		while (count < 4) {
+			Room r = randomRoom(Type.TUNNEL, 1);
+			if (r != null) {
+				r.type = Type.STANDARD;
+				count++;
+			}
+		}
+	}
+
+	protected void assignRoomConnectivity(Room r) {
+		HashSet<Room> neighbours = new HashSet<>();
+		for (Room n : r.neighbours) {
+			if (!r.connected.containsKey(n) &&
+					!Room.SPECIALS.contains(n.type) &&
+					n.type != Type.PIT) {
+
+				neighbours.add(n);
+			}
+		}
+		if (neighbours.size() > 1) {
+			r.connect(Random.element(neighbours));
 		}
 	}
 
@@ -257,7 +298,6 @@ public abstract class RegularLevel extends CommonLevel {
 						if (r.type == Type.WEAK_FLOOR) {
 							weakFloorCreated = true;
 						}
-
 					}
 
 					Room.useType(r.type);
@@ -265,45 +305,11 @@ public abstract class RegularLevel extends CommonLevel {
 					specialRooms++;
 
 				} else if (Random.Int(2) == 0) {
-
-					HashSet<Room> neighbours = new HashSet<>();
-					for (Room n : r.neighbours) {
-						if (!r.connected.containsKey(n) &&
-								!Room.SPECIALS.contains(n.type) &&
-								n.type != Type.PIT) {
-
-							neighbours.add(n);
-						}
-					}
-					if (neighbours.size() > 1) {
-						r.connect(Random.element(neighbours));
-					}
+					assignRoomConnectivity(r);
 				}
 			}
 		}
-
-		int count = 0;
-		for (Room r : rooms) {
-			if (r.type == Type.NULL) {
-				int connections = r.connected.size();
-				if (connections == 0) {
-
-				} else if (Random.Int(connections * connections) == 0) {
-					r.type = Type.STANDARD;
-					count++;
-				} else {
-					r.type = Type.TUNNEL;
-				}
-			}
-		}
-
-		while (count < 4) {
-			Room r = randomRoom(Type.TUNNEL, 1);
-			if (r != null) {
-				r.type = Type.STANDARD;
-				count++;
-			}
-		}
+		assignRemainingRooms();
 	}
 
 	protected void paintWater() {
@@ -569,16 +575,6 @@ public abstract class RegularLevel extends CommonLevel {
 	}
 
 	@Override
-	protected void createMobs() {
-		int nMobs = nMobs();
-		for (int i = 0; i < nMobs; i++) {
-			Mob mob = createMob();
-			mobs.add(mob);
-			Actor.occupyCell(mob);
-		}
-	}
-
-	@Override
 	public int randomRespawnCell() {
 		int count = 0;
 		int cell;
@@ -631,24 +627,7 @@ public abstract class RegularLevel extends CommonLevel {
 		}
 
 		for (int i = 0; i < nItems; i++) {
-			Heap.Type type;
-			switch (Random.Int(20)) {
-				case 0:
-					type = Heap.Type.SKELETON;
-					break;
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-					type = Heap.Type.CHEST;
-					break;
-				case 5:
-					type = Dungeon.depth > 1 ? Heap.Type.MIMIC : Heap.Type.CHEST;
-					break;
-				default:
-					type = Heap.Type.HEAP;
-			}
-			drop(Generator.random(), randomDropCell()).type = type;
+			drop(Generator.random(), randomDropCell()).type = Random.chances(Heap.regularHeaps);
 		}
 
 		for (Item item : itemsToSpawn) {

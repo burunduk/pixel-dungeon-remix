@@ -1,6 +1,5 @@
 package com.nyrds.pixeldungeon.levels;
 
-import com.nyrds.android.util.JsonHelper;
 import com.nyrds.android.util.TrackedRuntimeException;
 import com.nyrds.pixeldungeon.items.common.ItemFactory;
 import com.nyrds.pixeldungeon.levels.objects.LevelObjectsFactory;
@@ -8,24 +7,12 @@ import com.nyrds.pixeldungeon.mobs.common.MobFactory;
 import com.watabou.pixeldungeon.actors.Actor;
 import com.watabou.pixeldungeon.actors.mobs.Mob;
 import com.watabou.pixeldungeon.items.Item;
-import com.watabou.pixeldungeon.levels.CommonLevel;
-import com.watabou.utils.Bundle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PredesignedLevel extends CommonLevel {
-
-	private JSONObject mLevelDesc;
-	private String     mDescFile;
-
-	private final String descFileKey = "descFile";
-
-	{
-		color1 = 0x48763c;
-		color2 = 0x59994a;
-	}
+public class PredesignedLevel extends CustomLevel {
 
 	//for restoreFromBundle
 	public PredesignedLevel() {
@@ -35,23 +22,6 @@ public class PredesignedLevel extends CommonLevel {
 	public PredesignedLevel(String fileName) {
 		mDescFile = fileName;
 		readDescFile(mDescFile);
-	}
-
-	private void readDescFile(String descFile) {
-		mLevelDesc = JsonHelper.readJsonFromAsset(descFile);
-	}
-
-	@Override
-	public String tilesTex() {
-		return mLevelDesc.optString("tiles", "tiles0.png");
-	}
-
-	public String tilesTexEx() {
-		return mLevelDesc.optString("tiles_x", null);
-	}
-
-	public String waterTex() {
-		return mLevelDesc.optString("water", "water0.png");
 	}
 
 	@Override
@@ -114,7 +84,6 @@ public class PredesignedLevel extends CommonLevel {
 
 	@Override
 	protected boolean build() {
-
 		return true;
 	}
 
@@ -138,7 +107,6 @@ public class PredesignedLevel extends CommonLevel {
 					}
 
 					if (cellValid(x, y)) {
-
 						String kind = mobDesc.getString("kind");
 						Mob mob = MobFactory.mobClassByName(kind).newInstance();
 						mob.fromJson(mobDesc);
@@ -182,18 +150,5 @@ public class PredesignedLevel extends CommonLevel {
 	@Override
 	protected int nTraps() {
 		return 0;
-	}
-
-	@Override
-	public void storeInBundle(Bundle bundle) {
-		super.storeInBundle(bundle);
-		bundle.put(descFileKey, mDescFile);
-	}
-
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		mDescFile = bundle.getString(descFileKey);
-		readDescFile(mDescFile);
 	}
 }

@@ -22,7 +22,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Scene;
 import com.watabou.pixeldungeon.Assets;
 import com.watabou.pixeldungeon.Bones;
-import com.watabou.pixeldungeon.Dungeon;
 import com.watabou.pixeldungeon.actors.mobs.Bestiary;
 import com.watabou.pixeldungeon.actors.mobs.Mob;
 import com.watabou.pixeldungeon.items.Heap;
@@ -100,12 +99,12 @@ public class SewerBossLevel extends RegularLevel {
 		placeSecondaryExits();
 
 		Graph.buildDistanceMap( rooms, getRoomExit());
-		List<Room> path = Graph.buildPath( rooms, roomEntrance, getRoomExit());
+		List<Room> path = Graph.buildPath(roomEntrance, getRoomExit());
 		
 		Graph.setPrice( path, roomEntrance.distance );
 		
 		Graph.buildDistanceMap( rooms, getRoomExit());
-		path = Graph.buildPath( rooms, roomEntrance, getRoomExit());
+		path = Graph.buildPath(roomEntrance, getRoomExit());
 		
 		Room room = roomEntrance;
 		for (Room next : path) {
@@ -184,7 +183,7 @@ public class SewerBossLevel extends RegularLevel {
 	
 	@Override
 	protected void createMobs() {
-		Mob mob = Bestiary.mob( Dungeon.depth, levelKind() );
+		Mob mob = Bestiary.mob(  );
 
 		mob.setPos(getEmptyCellNextTo(getRoomExit().random(this)));
 		mobs.add( mob );

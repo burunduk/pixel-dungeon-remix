@@ -13,6 +13,7 @@ import com.nyrds.pixeldungeon.mobs.guts.YogsEye;
 import com.nyrds.pixeldungeon.mobs.guts.YogsHeart;
 import com.nyrds.pixeldungeon.mobs.guts.YogsTeeth;
 import com.nyrds.pixeldungeon.mobs.guts.ZombieGnoll;
+import com.nyrds.pixeldungeon.mobs.icecaves.Kobold;
 import com.nyrds.pixeldungeon.mobs.necropolis.DeathKnight;
 import com.nyrds.pixeldungeon.mobs.necropolis.DreadKnight;
 import com.nyrds.pixeldungeon.mobs.necropolis.EnslavedSoul;
@@ -28,7 +29,9 @@ import com.nyrds.pixeldungeon.mobs.spiders.SpiderNest;
 import com.nyrds.pixeldungeon.mobs.spiders.SpiderQueen;
 import com.nyrds.pixeldungeon.mobs.spiders.SpiderServant;
 import com.watabou.noosa.Game;
+import com.watabou.pixeldungeon.actors.mobs.Acidic;
 import com.watabou.pixeldungeon.actors.mobs.Albino;
+import com.watabou.pixeldungeon.actors.mobs.Bandit;
 import com.watabou.pixeldungeon.actors.mobs.Bat;
 import com.watabou.pixeldungeon.actors.mobs.Brute;
 import com.watabou.pixeldungeon.actors.mobs.Crab;
@@ -47,8 +50,10 @@ import com.watabou.pixeldungeon.actors.mobs.Monk;
 import com.watabou.pixeldungeon.actors.mobs.Piranha;
 import com.watabou.pixeldungeon.actors.mobs.Rat;
 import com.watabou.pixeldungeon.actors.mobs.Scorpio;
+import com.watabou.pixeldungeon.actors.mobs.Senior;
 import com.watabou.pixeldungeon.actors.mobs.Shadow;
 import com.watabou.pixeldungeon.actors.mobs.Shaman;
+import com.watabou.pixeldungeon.actors.mobs.Shielded;
 import com.watabou.pixeldungeon.actors.mobs.Skeleton;
 import com.watabou.pixeldungeon.actors.mobs.Spinner;
 import com.watabou.pixeldungeon.actors.mobs.Statue;
@@ -79,7 +84,7 @@ public class MobFactory {
 	}
 	
 	private static void initMobsMap() {
-		
+
 		mMobsList = new HashMap<>();
 		registerMobClass(Rat.class);
 		registerMobClass(Albino.class);
@@ -90,25 +95,27 @@ public class MobFactory {
 		registerMobClass(Skeleton.class);
 		registerMobClass(RatKing.class);
 		registerMobClass(Goo.class);
-		
+
 		registerMobClass(Shaman.class);
 		registerMobClass(Shadow.class);
 		registerMobClass(Bat.class);
 		registerMobClass(Brute.class);
 		registerMobClass(Tengu.class);
-		
+		registerMobClass(Bandit.class);
+
 		registerMobClass(SpiderServant.class);
 		registerMobClass(SpiderExploding.class);
 		registerMobClass(SpiderMind.class);
 		registerMobClass(SpiderEgg.class);
 		registerMobClass(SpiderNest.class);
 		registerMobClass(SpiderQueen.class);
-		
+
 		registerMobClass(Spinner.class);
 		registerMobClass(Elemental.class);
 		registerMobClass(Monk.class);
 		registerMobClass(DM300.class);
-		
+		registerMobClass(Shielded.class);
+
 		registerMobClass(AirElemental.class);
 		registerMobClass(WaterElemental.class);
 		registerMobClass(EarthElemental.class);
@@ -117,16 +124,18 @@ public class MobFactory {
 		registerMobClass(Succubus.class);
 		registerMobClass(King.class);
 		registerMobClass(Undead.class);
-		
+		registerMobClass(Senior.class);
+
 		registerMobClass(Eye.class);
 		registerMobClass(Scorpio.class);
+		registerMobClass(Acidic.class);
 		registerMobClass(Yog.class);
 		registerMobClass(Larva.class);
 		registerMobClass(BurningFist.class);
 		registerMobClass(RottingFist.class);
-		
+
 		registerMobClass(FetidRat.class);
-		
+
 		registerMobClass(Wraith.class);
 		registerMobClass(Mimic.class);
 		registerMobClass(MimicPie.class);
@@ -156,6 +165,15 @@ public class MobFactory {
 		registerMobClass(Lich.class);
 		registerMobClass(RunicSkull.class);
 		registerMobClass(Zombie.class);
+
+		registerMobClass(Crystal.class);
+
+		registerMobClass(Kobold.class);//"regular" enemy
+		//registerMobClass(KoboldIcemancer.class);//ranged caster
+		//registerMobClass(SnowSpirit.class);//little annoying thing
+		//registerMobClass(IceElemental.class);//elemental, obviously
+		//registerMobClass(Yeti.class);//big and tough
+		//registerMobClass(FrozenGuardian.class);//boss
 
 		registerMobClass(Hedgehog.class);
 	}

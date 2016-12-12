@@ -7,9 +7,12 @@ import com.nyrds.android.util.JsonHelper;
 import com.nyrds.android.util.TrackedRuntimeException;
 import com.nyrds.pixeldungeon.levels.FakeLastLevel;
 import com.nyrds.pixeldungeon.levels.GutsLevel;
+import com.nyrds.pixeldungeon.levels.IceCavesBossLevel;
+import com.nyrds.pixeldungeon.levels.IceCavesLevel;
 import com.nyrds.pixeldungeon.levels.NecroBossLevel;
 import com.nyrds.pixeldungeon.levels.NecroLevel;
 import com.nyrds.pixeldungeon.levels.PredesignedLevel;
+import com.nyrds.pixeldungeon.levels.RandomLevel;
 import com.nyrds.pixeldungeon.levels.ShadowLordLevel;
 import com.nyrds.pixeldungeon.ml.BuildConfig;
 import com.nyrds.pixeldungeon.ml.EventCollector;
@@ -49,14 +52,16 @@ public class DungeonGenerator {
 	private static final String SPIDER_LEVEL   = "SpiderLevel";
 	private static final String GUTS_LEVEL     = "GutsLevel";
 
-	public static final String UNKNOWN        = "unknown";
+	public static final String UNKNOWN = "unknown";
 
 	static private JSONObject mDungeonMap;
 	static private JSONObject mLevels;
 	static private JSONObject mGraph;
 
 	@NonNull
-	private static String mCurrentLevelId;
+	private static String mCurrentLevelId   = UNKNOWN;
+	private static String mCurrentLevelKind = UNKNOWN;
+
 	private static int    mCurrentLevelDepth;
 
 	static private HashMap<String, Class<? extends Level>> mLevelKindList;
@@ -65,12 +70,13 @@ public class DungeonGenerator {
 	static {
 		initLevelsMap();
 	}
+
 	private static void registerLevelClass(Class<? extends Level> levelClass) {
 		mLevelKindList.put(levelClass.getSimpleName(), levelClass);
 	}
 
 	private static void initLevelsMap() {
-		if(PixelDungeon.isAlpha() && BuildConfig.DEBUG) {
+		if (PixelDungeon.isAlpha() && BuildConfig.DEBUG) {
 			mDungeonMap = JsonHelper.readJsonFromAsset("levelsDesc/Dungeon_alpha.json");
 		} else {
 			mDungeonMap = JsonHelper.readJsonFromAsset("levelsDesc/Dungeon.json");
@@ -107,6 +113,10 @@ public class DungeonGenerator {
 
 		registerLevelClass(NecroLevel.class);
 		registerLevelClass(NecroBossLevel.class);
+
+		registerLevelClass(IceCavesLevel.class);
+		registerLevelClass(IceCavesBossLevel.class);
+		registerLevelClass(RandomLevel.class);
 	}
 
 	public static String getEntryLevelKind() {
@@ -154,7 +164,7 @@ public class DungeonGenerator {
 
 			if (descend && !current.levelId.equals(getEntryLevel())) {
 				if (Dungeon.level != null) { // not first descend
-					if(Dungeon.level.isExit(current.cellId)) {
+					if (Dungeon.level.isExit(current.cellId)) {
 						index = Dungeon.level.exitIndex(current.cellId);
 						next.cellId = -(index + 1);
 					}
@@ -168,23 +178,19 @@ public class DungeonGenerator {
 				}
 			}
 
-			if(index >= nextLevelSet.length()) {
+			if (index >= nextLevelSet.length()) {
 				index = 0;
-				EventCollector.logEvent("DungeonGenerator","wrong next level index");
+				EventCollector.logEvent("DungeonGenerator", "wrong next level index");
 			}
-
 
 			mCurrentLevelId = nextLevelSet.getString(index);
 
 			JSONObject nextLevelDesc = mLevels.getJSONObject(mCurrentLevelId);
 
-			next.levelId      = mCurrentLevelId;
+			next.levelId = mCurrentLevelId;
 			mCurrentLevelDepth = next.levelDepth = nextLevelDesc.getInt("depth");
-			next.levelKind    = nextLevelDesc.getString("kind");
-
-			JSONArray levelSize = nextLevelDesc.getJSONArray("size");
-			next.xs = levelSize.getInt(0);
-			next.ys = levelSize.getInt(1);
+			mCurrentLevelKind  = next.levelKind;
+			next.levelKind = nextLevelDesc.getString("kind");
 
 			return next;
 		} catch (JSONException e) {
@@ -198,7 +204,7 @@ public class DungeonGenerator {
 		try {
 			JSONObject levelDesc = mLevels.getJSONObject(id);
 
-			if(levelDesc.has(property)) {
+			if (levelDesc.has(property)) {
 				return levelDesc.getString(property);
 			}
 		} catch (JSONException e) {
@@ -225,11 +231,11 @@ public class DungeonGenerator {
 	public static Level.Feeling getCurrentLevelFeeling(String id) {
 		try {
 			String feeling = getLevelProperty(id, "feeling");
-			if(feeling==null) {
+			if (feeling == null) {
 				return Level.Feeling.UNDEFINED;
 			}
 			return Level.Feeling.valueOf(getLevelProperty(id, "feeling"));
-		} catch (IllegalArgumentException e){
+		} catch (IllegalArgumentException e) {
 			return Level.Feeling.UNDEFINED;
 		}
 	}
@@ -241,21 +247,40 @@ public class DungeonGenerator {
 
 	public static Level createLevel(Position pos) {
 		Class<? extends Level> levelClass = mLevelKindList.get(pos.levelKind);
+
 		if (levelClass == null) {
 			GLog.w("Unknown level type: %s", pos.levelKind);
 			pos.levelKind = DEAD_END_LEVEL;
 
 			return createLevel(pos);
 		}
+
 		try {
 			Level ret;
+			String levelId = pos.levelId;
 			if (levelClass == PredesignedLevel.class) {
-				String levelFile = mLevels.getJSONObject(pos.levelId).getString("file");
+				String levelFile = mLevels.getJSONObject(levelId).getString("file");
 				ret = new PredesignedLevel(levelFile);
+			} else if (levelClass == RandomLevel.class) {
+				String levelFile = mLevels.getJSONObject(levelId).getString("file");
+				ret = new RandomLevel(levelFile);
 			} else {
 				ret = levelClass.newInstance();
 			}
-			ret.levelId = pos.levelId;
+			ret.levelId = levelId;
+
+			JSONObject levelDesc = mLevels.getJSONObject(pos.levelId);
+
+			int xs = 32;
+			int ys = 32;
+			if(levelDesc.has("size")) {
+				JSONArray levelSize = levelDesc.getJSONArray("size");
+				xs = levelSize.optInt(0, 32);
+				ys = levelSize.optInt(1, 32);
+			}
+
+			ret.create(xs, ys);
+
 			return ret;
 		} catch (InstantiationException | IllegalAccessException | JSONException e) {
 			throw new TrackedRuntimeException(e);
@@ -302,6 +327,11 @@ public class DungeonGenerator {
 	}
 
 	@NonNull
+	public static String getCurrentLevelKind() {
+		return mCurrentLevelKind;
+	}
+
+	@NonNull
 	public static String getCurrentLevelId() {
 		return mCurrentLevelId;
 	}
@@ -311,8 +341,9 @@ public class DungeonGenerator {
 	}
 
 	public static void loadingLevel(Position next) {
-		mCurrentLevelId    = next.levelId;
+		mCurrentLevelId = next.levelId;
 		mCurrentLevelDepth = next.levelDepth;
+		mCurrentLevelKind = next.levelKind;
 	}
 
 
