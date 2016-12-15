@@ -16,9 +16,17 @@
     <string name="Kobold_Name_Objective">кобольда</string>
     <string name="Kobold_Desc">Без сумніву, це кобольд.</string>
 
+    <!-- STRINGS OF ColdSpirit CLASS -->
+    <string name="ColdSpirit_Name">дух холоду</string>
+    <string name="ColdSpirit_Gender">masculine</string>
+    <string name="ColdSpirit_Name_Objective">духа холоду</string>
+    <string name="ColdSpirit_Desc">Наче маленький кривавий сніжок.</string>
+
     <!-- Levels descriptions -->
-    <string name="IceCaves_TileDescDeco">Цей гнолл був заморожений заживо. Схоже він був заморожений тривалий час.</string>
-    <string name="IceCaves_TileHighGrass">Заморожена трава.</string>
-    <string name="IceCaves_TileDescHighGrass">Щільний заморожений блок трави.</string>
+    <!-- STRINGS OF IceCavesLevel CLASS -->
+    <string name="IceCaves_TileDescDeco">Даного гнолла було заморожено живим. Схоже він тут був тривалий час.</string>
+    <string name="IceCaves_TileHighGrass">Висока морожена трава</string>
+    <string name="IceCaves_TileGrass">Морожена трава.</string>
+    <string name="IceCaves_TileDescHighGrass">Виглядають як рослині блоки глибокої заморозки.</string>
 
 </resources>
