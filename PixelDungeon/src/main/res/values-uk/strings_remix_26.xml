@@ -22,11 +22,19 @@
     <string name="ColdSpirit_Name_Objective">духа холоду</string>
     <string name="ColdSpirit_Desc">Наче маленький кривавий сніжок.</string>
 
+    <!-- STRINGS OF IceElemental CLASS -->
+    <string name="IceElemental_Name">крижаний елементаль</string>
+    <string name="IceElemental_Gender">masculine</string>
+    <string name="IceElemental_Name_Objective">крижаного елементаля</string>
+    <string name="IceElemental_Desc">Гігантський голем виготовлений з суцільного шматку криги.</string>
+
     <!-- Levels descriptions -->
     <!-- STRINGS OF IceCavesLevel CLASS -->
     <string name="IceCaves_TileDescDeco">Даного гнолла було заморожено живим. Схоже він тут був тривалий час.</string>
     <string name="IceCaves_TileHighGrass">Висока морожена трава</string>
     <string name="IceCaves_TileGrass">Морожена трава.</string>
     <string name="IceCaves_TileDescHighGrass">Виглядають як рослині блоки глибокої заморозки.</string>
+    <string name="IceCaves_TileStatue">Заморожений Гнолл</string>
+    <string name="IceCaves_TileDescStatue">Ще одна жахлива статця... Стоп, зачекайте, це ж морожений гнолл.</string>
 
 </resources>
