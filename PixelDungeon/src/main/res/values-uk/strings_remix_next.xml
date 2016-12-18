@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="ConcreteBlock_Name">Тяжкий бетонний блок</string>
+    <string name="ConcreteBlock_Description">Аби посунути цей блок, потрібно як найменш %d одиниць сили</string>
+</resources>
