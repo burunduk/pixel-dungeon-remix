@@ -3,11 +3,11 @@
     <!-- Accessories descriptions -->
     <!-- STRINGS OF SantaHat CLASS -->
     <string name="SantaHat_Name">Капелюх Санти</string>
-    <string name="SantaHat_Info">Нічого не розкаже краще про підземеллство краще, а ніж червоний капелюх Лорда Глибин - Санти.</string>
+    <string name="SantaHat_Info">Нічого не розкаже краще про Підземвство краще, а ніж червоний капелюх Лорда Глибин - Санти.</string>
 
     <!-- STRINGS OF Rudolph CLASS -->
     <string name="Rudolph_Name">Червоний ніс та роги</string>
-    <string name="Rudolph_Info">Що може бути більш святковим, а ніж яскравий червоний ніс?</string>
+    <string name="Rudolph_Info">Що може бути більш святковим, а ніж яскравий червоний ніс? О, і пара рогів, звісно ж.</string>
 
     <!-- Mobs descriptions -->
     <!-- STRINGS OF Kobold CLASS -->
@@ -28,6 +28,12 @@
     <string name="IceElemental_Name_Objective">крижаного елементаля</string>
     <string name="IceElemental_Desc">Гігантський голем виготовлений з суцільного шматку криги.</string>
 
+    <!-- STRINGS OF IceGuardian CLASS -->
+    <string name="IceGuardian_Name">крижаний хранитель</string>
+    <string name="IceGuardian_Gender">masculine</string>
+    <string name="IceGuardian_Name_Objective">крижаного хранителя</string>
+    <string name="IceGuardian_Desc">Крижані стражі були змайстровані стародавніми кобольдами, аби захистити свої печери. Їхня сила зберігається в ядрі, що дозволяє хранителям відновлюватись до тих пір, доки вона містить енергію.</string>
+
     <!-- Levels descriptions -->
     <!-- STRINGS OF IceCavesLevel CLASS -->
     <string name="IceCaves_TileDescDeco">Даного гнолла було заморожено живим. Схоже він тут був тривалий час.</string>
@@ -35,6 +41,11 @@
     <string name="IceCaves_TileGrass">Морожена трава.</string>
     <string name="IceCaves_TileDescHighGrass">Виглядають як рослині блоки глибокої заморозки.</string>
     <string name="IceCaves_TileStatue">Заморожений Гнолл</string>
-    <string name="IceCaves_TileDescStatue">Ще одна жахлива статця... Стоп, зачекайте, це ж морожений гнолл.</string>
+    <string name="IceCaves_TileDescStatue">Ще одна жахлива статуя... Стоп, зачекайте, це ж морожений гнолл.</string>
+
+    <!-- Items descriptions -->
+    <!-- STRINGS OF ChristmasTurkey CLASS -->
+    <string name="ChristmasTurkey_Name">святкова індичка</string>
+    <string name="ChristmasTurkey_Info">Найкращий варіант відсвяткувати Підземство, це добрий шматок запеченої індички. Таким чином, можете відсвяткувати той день, коли монстри заполонили підземелля, приманюючи героїв зі всього світу. Що, в свою чергу, призвело до розвитку туризму та підвищенню товарообігу у місцевих торговців.</string>
 
 </resources>
